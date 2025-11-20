@@ -7,13 +7,15 @@ import ProfileTab from './profile';
 
 const Tab = createBottomTabNavigator();
 
+import { Tabs } from "expo-router";
+
 export default function TabsLayout() {
   return (
-    <Tab.Navigator initialRouteName="Overview">
-      <Tab.Screen name="Overview" component={OverviewTab} />
-      <Tab.Screen name="Hydration" component={HydrationTab} />
-      <Tab.Screen name="Activity" component={ActivityTab} />
-      <Tab.Screen name="Profile" component={ProfileTab} />
-    </Tab.Navigator>
+    <Tabs>
+      <Tabs.Screen name="index" options={{ title: "Overview" }} />
+      <Tabs.Screen name="hydration" options={{ title: "Hydration" }} />
+      <Tabs.Screen name="activity" options={{ title: "Activity" }} />
+      <Tabs.Screen name="profile" options={{ title: "Profile" }} />
+    </Tabs>
   );
 }

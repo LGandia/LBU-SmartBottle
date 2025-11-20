@@ -5,6 +5,7 @@ import 'react-native-reanimated';
 
 import { useColorScheme } from '@/hooks/use-color-scheme';
 
+// Expo Router setting: anchor stack to (tabs)
 export const unstable_settings = {
   anchor: '(tabs)',
 };
@@ -15,10 +16,24 @@ export default function RootLayout() {
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <Stack>
+        {/* Tabs (Overview, Hydration, Activity, Profile) */}
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
+
+        {/* Statistics page */}
+        <Stack.Screen name="statistics" options={{ title: 'Statistics' }} />
+
+        {/* Settings page */}
+        <Stack.Screen name="settings" options={{ title: 'Settings' }} />
+
+        {/* Modal page with proper presentation */}
+        <Stack.Screen
+          name="modal"
+          options={{ presentation: 'modal', title: 'Modal' }}
+        />
       </Stack>
-      <StatusBar style="auto" />
+
+      {/* Status bar adapts to theme */}
+      <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
     </ThemeProvider>
   );
 }
