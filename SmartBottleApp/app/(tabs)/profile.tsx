@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Alert } from "react-native";
 import {
   View,
   Text,
@@ -36,9 +37,28 @@ export default function ProfileTab() {
     return age;
   };
 
-  const handleSave = () => {
-    console.log("Profile saved:", { name, description, gender, dob, height, weight });
-    alert("Profile updated!");
+  const handleSave = async() => {
+    const payload = {
+      name,
+      gender,
+      dob: formattedDob,
+      height,
+      weight,
+    };
+    try {
+      const response = await fetch("http://192.168.0.201:5000/profile", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      
+      const result = await response.json();
+      console.log("Profile update response:", result);
+      Alert.alert(result.message || "Profile updated successfully!");
+    } catch (error) {
+      console.error("Error saving profile:", error);
+      Alert.alert("Failed to update profile. Please try again.");
+    }
   };
 
   // Format DOB in European format (DD/MM/YYYY)
