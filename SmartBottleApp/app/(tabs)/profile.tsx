@@ -8,24 +8,43 @@ import {
   Button,
   ScrollView,
   useColorScheme,
+  Platform,
 } from 'react-native';
+import { Picker } from '@react-native-picker/picker';
+import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
 
 export default function ProfileTab() {
-  const [name, setName] = useState("John Doe");
-  const [description, setDescription] = useState("SmartBottle user");
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
   const [gender, setGender] = useState("Male");
-  const [age, setAge] = useState("25");
-  const [height, setHeight] = useState("175"); // cm
-  const [weight, setWeight] = useState("70");  // kg
+  const [dob, setDob] = useState(new Date(2000, 0, 1)); // default DOB
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [height, setHeight] = useState("");
+  const [weight, setWeight] = useState("");
 
-  // Detect system theme (light or dark)
   const colorScheme = useColorScheme();
   const isDark = colorScheme === "dark";
 
+  // Calculate age from DOB
+  const calculateAge = (date: Date) => {
+    const today = new Date();
+    let age = today.getFullYear() - date.getFullYear();
+    const m = today.getMonth() - date.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < date.getDate())) {
+      age--;
+    }
+    return age;
+  };
+
   const handleSave = () => {
-    console.log("Profile saved:", { name, description, gender, age, height, weight });
+    console.log("Profile saved:", { name, description, gender, dob, height, weight });
     alert("Profile updated!");
   };
+
+  // Format DOB in European format (DD/MM/YYYY)
+  const formattedDob = `${dob.getDate().toString().padStart(2, "0")}/${(dob.getMonth() + 1)
+    .toString()
+    .padStart(2, "0")}/${dob.getFullYear()}`;
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -35,53 +54,81 @@ export default function ProfileTab() {
         style={styles.profilePic}
       />
 
-      {/* Name & Description */}
-      <Text style={[styles.title, { color: isDark ? "#fff" : "#000" }]}>{name}</Text>
-      <Text style={[styles.subtitle, { color: isDark ? "#ccc" : "gray" }]}>{description}</Text>
-
-      {/* Editable Fields */}
+      {/* Name */}
+      <Text style={[styles.label, { color: isDark ? "#fff" : "#000" }]}>Name</Text>
       <TextInput
         style={[styles.input, { color: isDark ? "#fff" : "#000" }]}
         value={name}
         onChangeText={setName}
-        placeholder="Name"
+        placeholder="Enter your full name"
         placeholderTextColor={isDark ? "#aaa" : "#555"}
       />
+
+      {/* Description */}
+      <Text style={[styles.label, { color: isDark ? "#fff" : "#000" }]}>Description</Text>
       <TextInput
         style={[styles.input, { color: isDark ? "#fff" : "#000" }]}
         value={description}
         onChangeText={setDescription}
-        placeholder="Description"
+        placeholder="Short bio or tagline"
         placeholderTextColor={isDark ? "#aaa" : "#555"}
       />
+
+      {/* Gender Dropdown */}
+      <Text style={[styles.label, { color: isDark ? "#fff" : "#000" }]}>Gender</Text>
+      <View style={styles.pickerWrapper}>
+        <Picker
+          selectedValue={gender}
+          onValueChange={(itemValue) => setGender(itemValue)}
+          style={{ color: isDark ? "#fff" : "#000" }}
+          dropdownIconColor={isDark ? "#fff" : "#000"}
+        >
+          <Picker.Item label="Male" value="Male" />
+          <Picker.Item label="Female" value="Female" />
+          <Picker.Item label="Other" value="Other" />
+          <Picker.Item label="Prefer not to say" value="Prefer not to say" />
+        </Picker>
+      </View>
+
+      {/* Date of Birth + Age */}
+      <Text style={[styles.label, { color: isDark ? "#fff" : "#000" }]}>Date of Birth</Text>
       <TextInput
         style={[styles.input, { color: isDark ? "#fff" : "#000" }]}
-        value={gender}
-        onChangeText={setGender}
-        placeholder="Gender"
+        value={`${formattedDob} (Age: ${calculateAge(dob)} years)`}
+        placeholder="DD/MM/YYYY"
         placeholderTextColor={isDark ? "#aaa" : "#555"}
+        onFocus={() => setShowDatePicker(true)}
       />
-      <TextInput
-        style={[styles.input, { color: isDark ? "#fff" : "#000" }]}
-        value={age}
-        onChangeText={setAge}
-        placeholder="Age"
-        keyboardType="numeric"
-        placeholderTextColor={isDark ? "#aaa" : "#555"}
-      />
+      {showDatePicker && (
+        <DateTimePicker
+          value={dob}
+          mode="date"
+          display={Platform.OS === "ios" ? "spinner" : "default"}
+          onChange={(event: DateTimePickerEvent, selectedDate?: Date) => {
+            setShowDatePicker(false);
+            if (selectedDate) setDob(selectedDate);
+          }}
+        />
+      )}
+
+      {/* Height */}
+      <Text style={[styles.label, { color: isDark ? "#fff" : "#000" }]}>Height (cm)</Text>
       <TextInput
         style={[styles.input, { color: isDark ? "#fff" : "#000" }]}
         value={height}
         onChangeText={setHeight}
-        placeholder="Height (cm)"
+        placeholder="Enter your height in cm"
         keyboardType="numeric"
         placeholderTextColor={isDark ? "#aaa" : "#555"}
       />
+
+      {/* Weight */}
+      <Text style={[styles.label, { color: isDark ? "#fff" : "#000" }]}>Weight (kg)</Text>
       <TextInput
         style={[styles.input, { color: isDark ? "#fff" : "#000" }]}
         value={weight}
         onChangeText={setWeight}
-        placeholder="Weight (kg)"
+        placeholder="Enter your weight in kg"
         keyboardType="numeric"
         placeholderTextColor={isDark ? "#aaa" : "#555"}
       />
@@ -95,14 +142,20 @@ export default function ProfileTab() {
 const styles = StyleSheet.create({
   container: { alignItems: "center", padding: 20 },
   profilePic: { width: 100, height: 100, borderRadius: 50, marginBottom: 15 },
-  title: { fontSize: 22, fontWeight: "bold" },
-  subtitle: { fontSize: 16, marginBottom: 20 },
+  label: { alignSelf: "flex-start", marginLeft: "5%", marginBottom: 5, fontSize: 14 },
   input: {
     width: "90%",
     borderWidth: 1,
     borderColor: "gray",
     borderRadius: 5,
     padding: 10,
-    marginBottom: 10,
+    marginBottom: 15,
+  },
+  pickerWrapper: {
+    width: "90%",
+    borderWidth: 1,
+    borderColor: "gray",
+    borderRadius: 5,
+    marginBottom: 15,
   },
 });
