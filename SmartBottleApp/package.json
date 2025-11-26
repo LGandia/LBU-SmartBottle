@@ -9,8 +9,9 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "lint": "expo lint",
-    "backend": "python app.py",
-    "dev": "concurrently \"npm run backend\" \"npm start\""
+    "backend": "python ./backend/app.py",
+    "frontend": "expo start --clear --interactive",
+    "dev": "concurrently \"npm run backend\" \"npm run frontend\""
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.3",
