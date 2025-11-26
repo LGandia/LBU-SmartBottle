@@ -10,10 +10,12 @@ import {
   ScrollView,
   useColorScheme,
   Platform,
+  TouchableOpacity,
 } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
 import { useRouter, Link } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons'; // Expo vector icons
 
 // Define a TypeScript interface for the profile payload
 interface UserProfile {
@@ -86,106 +88,122 @@ export default function ProfileTab() {
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      {/* Profile Picture */}
-      <Image
-        source={{ uri: 'https://via.placeholder.com/100' }}
-        style={styles.profilePic}
-      />
-
-      {/* Name */}
-      <Text style={[styles.label, { color: isDark ? '#fff' : '#000' }]}>Name</Text>
-      <TextInput
-        style={[styles.input, { color: isDark ? '#fff' : '#000' }]}
-        value={name}
-        onChangeText={setName}
-        placeholder="Enter your full name"
-        placeholderTextColor={isDark ? '#aaa' : '#555'}
-      />
-
-      {/* Description */}
-      <Text style={[styles.label, { color: isDark ? '#fff' : '#000' }]}>Description</Text>
-      <TextInput
-        style={[styles.input, { color: isDark ? '#fff' : '#000' }]}
-        value={description}
-        onChangeText={setDescription}
-        placeholder="Short bio or tagline"
-        placeholderTextColor={isDark ? '#aaa' : '#555'}
-      />
-
-      {/* Gender Dropdown */}
-      <Text style={[styles.label, { color: isDark ? '#fff' : '#000' }]}>Gender</Text>
-      <View style={styles.pickerWrapper}>
-        <Picker
-          selectedValue={gender}
-          onValueChange={(itemValue) => setGender(itemValue)}
-          style={{ color: isDark ? '#fff' : '#000' }}
-          dropdownIconColor={isDark ? '#fff' : '#000'}
-        >
-          <Picker.Item label="Male" value="Male" />
-          <Picker.Item label="Female" value="Female" />
-          <Picker.Item label="Other" value="Other" />
-          <Picker.Item label="Prefer not to say" value="Prefer not to say" />
-        </Picker>
-      </View>
-
-      {/* Date of Birth + Age */}
-      <Text style={[styles.label, { color: isDark ? '#fff' : '#000' }]}>Date of Birth</Text>
-      <TextInput
-        style={[styles.input, { color: isDark ? '#fff' : '#000' }]}
-        value={`${formattedDob} (Age: ${calculateAge(dob)} years)`}
-        placeholder="DD/MM/YYYY"
-        placeholderTextColor={isDark ? '#aaa' : '#555'}
-        onFocus={() => setShowDatePicker(true)}
-      />
-      {showDatePicker && (
-        <DateTimePicker
-          value={dob}
-          mode="date"
-          display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-          onChange={(event: DateTimePickerEvent, selectedDate?: Date) => {
-            setShowDatePicker(false);
-            if (selectedDate) setDob(selectedDate);
-          }}
-        />
-      )}
-
-      {/* Height */}
-      <Text style={[styles.label, { color: isDark ? '#fff' : '#000' }]}>Height (cm)</Text>
-      <TextInput
-        style={[styles.input, { color: isDark ? '#fff' : '#000' }]}
-        value={height}
-        onChangeText={setHeight}
-        placeholder="Enter your height in cm"
-        keyboardType="numeric"
-        placeholderTextColor={isDark ? '#aaa' : '#555'}
-      />
-
-      {/* Weight */}
-      <Text style={[styles.label, { color: isDark ? '#fff' : '#000' }]}>Weight (kg)</Text>
-      <TextInput
-        style={[styles.input, { color: isDark ? '#fff' : '#000' }]}
-        value={weight}
-        onChangeText={setWeight}
-        placeholder="Enter your weight in kg"
-        keyboardType="numeric"
-        placeholderTextColor={isDark ? '#aaa' : '#555'}
-      />
-
-      {/* Save Button */}
-      <Button title="Save Profile" onPress={handleSave} />
-
-      {/* Navigation Buttons (type-safe with Link) */}
-      <View style={{ marginTop: 20 }}>
+    <View style={{ flex: 1 }}>
+      {/* Header with gear icon */}
+      <View style={styles.header}>
+        <Text style={[styles.headerTitle, { color: isDark ? '#fff' : '#000' }]}>Profile</Text>
         <Link href="/settings" asChild>
-          <Button title="Accessibility Settings" />
+          <TouchableOpacity>
+            <Ionicons name="settings-outline" size={28} color={isDark ? '#fff' : '#000'} />
+          </TouchableOpacity>
         </Link>
       </View>
-    </ScrollView>
+
+      <ScrollView contentContainerStyle={styles.container}>
+        {/* Profile Picture */}
+        <Image
+          source={{ uri: 'https://via.placeholder.com/100' }}
+          style={styles.profilePic}
+        />
+
+        {/* Name */}
+        <Text style={[styles.label, { color: isDark ? '#fff' : '#000' }]}>Name</Text>
+        <TextInput
+          style={[styles.input, { color: isDark ? '#fff' : '#000' }]}
+          value={name}
+          onChangeText={setName}
+          placeholder="Enter your full name"
+          placeholderTextColor={isDark ? '#aaa' : '#555'}
+        />
+
+        {/* Description */}
+        <Text style={[styles.label, { color: isDark ? '#fff' : '#000' }]}>Description</Text>
+        <TextInput
+          style={[styles.input, { color: isDark ? '#fff' : '#000' }]}
+          value={description}
+          onChangeText={setDescription}
+          placeholder="Short bio or tagline"
+          placeholderTextColor={isDark ? '#aaa' : '#555'}
+        />
+
+        {/* Gender Dropdown */}
+        <Text style={[styles.label, { color: isDark ? '#fff' : '#000' }]}>Gender</Text>
+        <View style={styles.pickerWrapper}>
+          <Picker
+            selectedValue={gender}
+            onValueChange={(itemValue) => setGender(itemValue)}
+            style={{ color: isDark ? '#fff' : '#000' }}
+            dropdownIconColor={isDark ? '#fff' : '#000'}
+          >
+            <Picker.Item label="Male" value="Male" />
+            <Picker.Item label="Female" value="Female" />
+            <Picker.Item label="Other" value="Other" />
+            <Picker.Item label="Prefer not to say" value="Prefer not to say" />
+          </Picker>
+        </View>
+
+        {/* Date of Birth + Age */}
+        <Text style={[styles.label, { color: isDark ? '#fff' : '#000' }]}>Date of Birth</Text>
+        <TextInput
+          style={[styles.input, { color: isDark ? '#fff' : '#000' }]}
+          value={`${formattedDob} (Age: ${calculateAge(dob)} years)`}
+          placeholder="DD/MM/YYYY"
+          placeholderTextColor={isDark ? '#aaa' : '#555'}
+          onFocus={() => setShowDatePicker(true)}
+        />
+        {showDatePicker && (
+          <DateTimePicker
+            value={dob}
+            mode="date"
+            display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+            onChange={(event: DateTimePickerEvent, selectedDate?: Date) => {
+              setShowDatePicker(false);
+              if (selectedDate) setDob(selectedDate);
+            }}
+          />
+        )}
+
+        {/* Height */}
+        <Text style={[styles.label, { color: isDark ? '#fff' : '#000' }]}>Height (cm)</Text>
+        <TextInput
+          style={[styles.input, { color: isDark ? '#fff' : '#000' }]}
+          value={height}
+          onChangeText={setHeight}
+          placeholder="Enter your height in cm"
+          keyboardType="numeric"
+          placeholderTextColor={isDark ? '#aaa' : '#555'}
+        />
+
+        {/* Weight */}
+        <Text style={[styles.label, { color: isDark ? '#fff' : '#000' }]}>Weight (kg)</Text>
+        <TextInput
+          style={[styles.input, { color: isDark ? '#fff' : '#000' }]}
+          value={weight}
+          onChangeText={setWeight}
+          placeholder="Enter your weight in kg"
+          keyboardType="numeric"
+          placeholderTextColor={isDark ? '#aaa' : '#555'}
+        />
+
+        {/* Save Button */}
+        <Button title="Save Profile" onPress={handleSave} />
+      </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingVertical: 15,
+  },
+  headerTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+  },
   container: { alignItems: 'center', padding: 20 },
   profilePic: { width: 100, height: 100, borderRadius: 50, marginBottom: 15 },
   label: { alignSelf: 'flex-start', marginLeft: '5%', marginBottom: 5, fontSize: 14 },

@@ -3,8 +3,11 @@ from models import db, Profile
 
 app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///db.sqlite3"
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+
 db.init_app(app)
 
+# Create tables
 with app.app_context():
     db.create_all()
 
@@ -21,3 +24,7 @@ def save_profile():
     db.session.add(profile)
     db.session.commit()
     return jsonify({"status": "success", "message": "Profile saved"})
+
+if __name__ == "__main__":
+    # IMPORTANT: bind to 0.0.0.0 so your phone can reach it
+    app.run(host="0.0.0.0", port=5000, debug=True)
